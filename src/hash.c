@@ -265,5 +265,6 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 
 size_t hash_con_cada_clave(hash_t *hash, bool (*f)(const char *clave, void *valor, void *aux), void *aux)
 {
+	
 	return 0;
 }
