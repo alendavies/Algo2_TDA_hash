@@ -87,19 +87,19 @@ nodo_t *insertar_nodo(nodo_t *inicio, nodo_t *nodo, void ***anterior)
 		return nodo;
 	}
 
-	nodo_t *aux = inicio;
+	nodo_t *actual = inicio;
 
-	while(aux->siguiente != NULL && aux->clave != nodo->clave){
-		aux = aux->siguiente;
+	while(actual->siguiente != NULL && actual->clave != nodo->clave){
+		actual = actual->siguiente;
 	}
 
-	if(!aux->siguiente){
-		aux->siguiente = nodo;
+	if(!actual->siguiente){
+		actual->siguiente = nodo;
 		nodo->siguiente = NULL;
 	}
-	if(aux->clave == nodo->clave){
-		anterior = aux->elemento;
-		aux->elemento = nodo->elemento;
+	if(actual->clave == nodo->clave){
+		anterior = actual->elemento;
+		actual->elemento = nodo->elemento;
 	}
 
 	return inicio;
@@ -174,6 +174,20 @@ void *hash_quitar(hash_t *hash, const char *clave)
 
 void *hash_obtener(hash_t *hash, const char *clave)
 {
+	if(!hash || !clave){
+		return NULL;
+	}
+	int i = 0;
+	while(i < hash->capacidad){
+		nodo_t *actual = hash->tabla[i];
+		while(actual != NULL){
+			if(actual->clave == clave){
+				return actual->elemento;
+			}
+			actual = actual->siguiente;
+		}
+		i++;
+	}
 	return NULL;
 }
 
