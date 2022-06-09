@@ -109,9 +109,9 @@ int main()
 	verificar_vehiculo(garage, "QDM443", false);
 	verificar_vehiculo(garage, "PQO697", false);
 
-	size_t impresas = hash_con_cada_clave(garage, mostrar_patente, NULL);
+	/* size_t impresas = hash_con_cada_clave(garage, mostrar_patente, NULL);
 	printf("Se mostraron %zu patentes con el iterador interno\n\n",
-	       impresas);
+	       impresas); */
 
 	hash_destruir_todo(garage, destruir_string);
 
