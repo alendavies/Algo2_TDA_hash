@@ -55,6 +55,28 @@ nodo_t *nodo_crear(const char *clave, void *elemento){
 	return nodo;
 }
 
+hash_t *rehash(hash_t *hash_original){
+
+	hash_t *nuevo_hash = hash_crear((size_t)hash_original->capacidad*2);
+	int i = 0;
+	while(i < hash_original->capacidad){
+		nodo_t *aux = hash_original->tabla[i];
+		while(aux != NULL){
+			hash_insertar(nuevo_hash, aux->clave, aux->elemento, NULL);
+		}
+		aux = aux->siguiente;
+		i++;
+	}
+
+	hash_t auxiliar;
+	auxiliar = *hash_original;
+	*hash_original = *nuevo_hash;
+	*nuevo_hash = auxiliar;
+	hash_destruir(nuevo_hash);
+
+	return hash_original;
+}
+
 nodo_t *insertar_nodo(nodo_t *inicio, nodo_t *nodo, void ***anterior)
 {
 	if(!nodo || !anterior){
@@ -113,32 +135,41 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	return hash;
 }
 
-hash_t *rehash(hash_t *hash_original){
+void *quitar_nodo(nodo_t *inicio, const char *clave){
 
-	hash_t *nuevo_hash = hash_crear(hash_original->capacidad*2);
-	int i = 0;
-	while(i < hash_original->capacidad){
-		nodo_t *aux = hash_original->tabla[i];
-		while(aux != NULL){
-			hash_insertar(nuevo_hash, aux->clave, aux->elemento, NULL);
-		}
-		aux = aux->siguiente;
-		i++;
+	nodo_t *actual = inicio;
+	nodo_t *anterior = NULL;
+	void *elemento = NULL;
+
+	while(actual && actual->clave != clave){
+		anterior = actual;
+		actual = actual->siguiente;
 	}
 
-	hash_t auxiliar;
-	auxiliar = *hash_original;
-	*hash_original = *nuevo_hash;
-	*nuevo_hash = auxiliar;
-	hash_destruir(nuevo_hash);
+	if(!actual){
+		return NULL;
+	}
+	elemento = actual->elemento;
 
-	return hash_original;
+	if(anterior){
+		anterior->siguiente = actual->siguiente;
+	}
+	else{
+		inicio = actual->siguiente;
+	}
+	free(actual);
+	return elemento;
 }
 
 void *hash_quitar(hash_t *hash, const char *clave)
 {
+	if(!hash || !clave){
+		return NULL;
+	}
+	int posicion = funcion_hash(clave) % hash->capacidad;
 
-	return NULL;
+	void *elemento = quitar_nodo(hash->tabla[posicion], clave);
+	return elemento;
 }
 
 void *hash_obtener(hash_t *hash, const char *clave)
@@ -170,7 +201,7 @@ size_t hash_cantidad(hash_t *hash)
 	if(!hash){
 		return 0;
 	}
-	return hash->ocupados;
+	return (size_t)hash->ocupados;
 }
 
 void hash_destruir(hash_t *hash)
