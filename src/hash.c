@@ -1,6 +1,8 @@
 #include "hash.h"
 #include <stdlib.h>
 
+#define FACTOR 0.75
+
 typedef struct nodo {
 	void *elemento;
 	const char *clave;
@@ -83,6 +85,16 @@ nodo_t *insertar_nodo(nodo_t *inicio, nodo_t *nodo, void ***anterior)
 
 hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **anterior)
 {
+	if(!hash || !clave || !elemento){
+		return NULL;
+	}
+
+	int factor_carga = hash->ocupados / hash->capacidad;
+
+	if(factor_carga >= FACTOR){
+		rehash(hash);
+	}
+
 	int posicion = funcion_hash(clave) % hash->capacidad;
 
 	nodo_t *nuevo_nodo = nodo_crear(clave, elemento);
@@ -99,6 +111,28 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	hash->tabla[posicion] = lista_inicio;
 
 	return hash;
+}
+
+hash_t *rehash(hash_t *hash_original){
+
+	hash_t *nuevo_hash = hash_crear(hash_original->capacidad*2);
+	int i = 0;
+	while(i < hash_original->capacidad){
+		nodo_t *aux = hash_original->tabla[i];
+		while(aux != NULL){
+			hash_insertar(nuevo_hash, aux->clave, aux->elemento, NULL);
+		}
+		aux = aux->siguiente;
+		i++;
+	}
+
+	hash_t auxiliar;
+	auxiliar = *hash_original;
+	*hash_original = *nuevo_hash;
+	*nuevo_hash = auxiliar;
+	hash_destruir(nuevo_hash);
+
+	return hash_original;
 }
 
 void *hash_quitar(hash_t *hash, const char *clave)
