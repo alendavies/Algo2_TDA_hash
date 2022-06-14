@@ -37,16 +37,16 @@ void inserto_un_elemento_y_se_inserta_correctamente(){
 	char *matias = "Matias";
 	char *azul = "Azul";
 
-	pa2m_afirmar(hash_insertar(hash, "AC123BD", mariano, anterior) != NULL, "Inserto un elemento correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "AC123BD", mariano, &anterior) != NULL, "Inserto un elemento correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 1, "El hash tiene un elemento.");
 
-	pa2m_afirmar(hash_insertar(hash, "OPQ976", lucas, anterior) != NULL, "Inserto un segundo elemento correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "OPQ976", lucas, &anterior) != NULL, "Inserto un segundo elemento correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 2, "El hash tiene dos elementos.");
 
-	pa2m_afirmar(hash_insertar(hash, "A421ACB", manu, anterior) != NULL, "Inserto un tercer elemento correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "A421ACB", manu, &anterior) != NULL, "Inserto un tercer elemento correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 3, "El hash tiene tres elementos.");
 
-	pa2m_afirmar(hash_insertar(hash, "AA442CD", guido, anterior) != NULL, "Inserto un cuarto elemento correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "AA442CD", guido, &anterior) != NULL, "Inserto un cuarto elemento correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 4, "El hash tiene cuatro elementos.");
 
 	pa2m_afirmar(hash_contiene(hash, "AC123BD"), "Busco un elemento por su clave y lo encuentro.");
@@ -61,13 +61,13 @@ void inserto_un_elemento_y_se_inserta_correctamente(){
 	pa2m_afirmar(hash_contiene(hash, "AA442CD"), "Busco un cuarto elemento por su clave y lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "AA442CD") == guido, "El elemento de la clave pasada es el correcto.");
 
-	pa2m_afirmar(hash_insertar(hash, "AC123BD", matias, anterior) != NULL, "Inserto un elemento con clave repetida correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "AC123BD", matias, &anterior) != NULL, "Inserto un elemento con clave repetida correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 4, "El hash sigue teniendo la misma cantidad de elementos.");
 
 	pa2m_afirmar(hash_contiene(hash, "AC123BD"), "Busco el elemento por su clave y lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "AC123BD") == matias, "Se reemplazó el elemento de la clave repetida.");
 
-	pa2m_afirmar(hash_insertar(hash, "A421ACB", azul, anterior) != NULL, "Inserto otro elemento con clave repetida correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "A421ACB", azul, &anterior) != NULL, "Inserto otro elemento con clave repetida correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 4, "El hash sigue teniendo la misma cantidad de elementos.");
 
 	pa2m_afirmar(hash_contiene(hash, "A421ACB"), "Busco el elemento por su clave y lo encuentro.");
