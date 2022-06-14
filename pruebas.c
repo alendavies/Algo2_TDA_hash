@@ -107,16 +107,16 @@ void quito_un_elemento_y_se_quita_correctamente(){
 	pa2m_afirmar(hash_quitar(hash, "AA442CD") == matias, "Quito un elemento correctamente y lo devuelve.");
 	pa2m_afirmar(hash_cantidad(hash) == 0, "Disminuye la cantidad de elementos en el hash, el hash queda vacío.");
 
-	pa2m_afirmar(hash_contiene(hash, "AC123BD"), "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
+	pa2m_afirmar(hash_contiene(hash, "AC123BD") == false, "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "AC123BD") == NULL, "El elemento de la clave pasada no existe");
 
-	pa2m_afirmar(hash_contiene(hash, "OPQ976"),  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
+	pa2m_afirmar(hash_contiene(hash, "OPQ976") == false,  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "OPQ976") == NULL, "El elemento de la clave pasada no existe.");
 
-	pa2m_afirmar(hash_contiene(hash, "A421ACB"),  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
+	pa2m_afirmar(hash_contiene(hash, "A421ACB") == false,  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "A421ACB") == NULL, "El elemento de la clave pasada no existe.");
 
-	pa2m_afirmar(hash_contiene(hash,"AA442CD"),  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
+	pa2m_afirmar(hash_contiene(hash,"AA442CD") == false,  "Busco un elemento por su clave que fue eliminado y no lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash,"AA442CD") == NULL, "El elemento de la clave pasada no existe.");
 	
 	pa2m_afirmar(hash_quitar(hash, "AA442CD") == NULL, "No puedo quitar un elemento que no está en el hash.");

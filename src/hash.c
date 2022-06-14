@@ -154,13 +154,13 @@ nodo_t *quitar_nodo(nodo_t *inicio, const char *clave, void **elemento){
 	nodo_t *actual = inicio;
 	nodo_t *anterior = NULL;
 
-	while(actual && actual->clave != clave){
+	while(actual != NULL && actual->clave != clave){
 		anterior = actual;
 		actual = actual->siguiente;
 	}
 
 	if(!actual){
-		return NULL;
+		return inicio;
 	}
 	*elemento = actual->elemento;
 
@@ -184,11 +184,11 @@ void *hash_quitar(hash_t *hash, const char *clave)
 
 	nodo_t *lista_inicio = quitar_nodo(hash->tabla[posicion], clave, &elemento);
 
-	if(!lista_inicio){
-		return NULL;
-	}
 	hash->tabla[posicion] = lista_inicio;
-	hash->ocupados--;
+	
+	if(elemento != NULL){
+		hash->ocupados--;
+	}
 
 	return elemento;
 }
