@@ -279,18 +279,17 @@ size_t hash_con_cada_clave(hash_t *hash, bool (*f)(const char *clave, void *valo
 	}
 	int i = 0;
 	size_t cantidad = 0;
-	bool funcion = true;
-	while(i < hash->capacidad && funcion == false){
+	while(i < hash->capacidad){
 		nodo_t *actual = hash->tabla[i];
 		while(actual != NULL){
 			cantidad++;
-			if(!f(actual->clave, actual->elemento, aux)){
-				funcion = false;
+			if(f(actual->clave, actual->elemento, aux) == false){
+				return cantidad;
 			}
 			actual = actual->siguiente;
 		}
 		i++;
 	}
 	
-	return cantidad+1;
+	return cantidad;
 }
