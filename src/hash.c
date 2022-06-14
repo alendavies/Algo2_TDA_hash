@@ -128,9 +128,9 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	nodo_t *lista_inicio = insertar_nodo(hash->tabla[posicion], &repetida, nuevo_nodo, &anterior);
 
 	hash->tabla[posicion] = lista_inicio;
-	if(repetida == false){
+	/* if(repetida == false){
 		hash->ocupados++;
-	}
+	} */
 
 	return hash;
 }
@@ -174,7 +174,7 @@ void *hash_quitar(hash_t *hash, const char *clave)
 		return NULL;
 	}
 	hash->tabla[posicion] = lista_inicio;
-	hash->ocupados--;
+	//hash->ocupados--;
 
 	return elemento;
 }
