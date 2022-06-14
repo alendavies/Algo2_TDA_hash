@@ -77,12 +77,8 @@ hash_t *rehash(hash_t *hash_original){
 	return hash_original;
 }
 
-nodo_t *insertar_nodo(nodo_t *inicio, nodo_t *nodo, void ***anterior)
+nodo_t *insertar_nodo(nodo_t *inicio, bool *repetida, nodo_t *nodo, void ***anterior)
 {
-	if(!nodo || !anterior){
-		return NULL;
-	}
-
 	if(!inicio){
 		return nodo;
 	}
@@ -98,8 +94,11 @@ nodo_t *insertar_nodo(nodo_t *inicio, nodo_t *nodo, void ***anterior)
 		nodo->siguiente = NULL;
 	}
 	if(actual->clave == nodo->clave){
-		anterior = actual->elemento;
-		actual->elemento = nodo->elemento;
+		*repetida = true;
+		if(anterior && *anterior){
+			**anterior = actual->elemento;
+			actual->elemento = nodo->elemento;
+		}
 	}
 
 	return inicio;
@@ -124,13 +123,14 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	if(!nuevo_nodo){
 		return NULL;
 	}
+	bool repetida = false;
 
-	nodo_t *lista_inicio = insertar_nodo(hash->tabla[posicion], nuevo_nodo, &anterior);
+	nodo_t *lista_inicio = insertar_nodo(hash->tabla[posicion], &repetida, nuevo_nodo, &anterior);
 
-	if(!lista_inicio){
-		return NULL;
-	}
 	hash->tabla[posicion] = lista_inicio;
+	if(repetida == false){
+		hash->ocupados++;
+	}
 
 	return hash;
 }
@@ -174,6 +174,7 @@ void *hash_quitar(hash_t *hash, const char *clave)
 		return NULL;
 	}
 	hash->tabla[posicion] = lista_inicio;
+	hash->ocupados--;
 
 	return elemento;
 }
@@ -265,6 +266,23 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 
 size_t hash_con_cada_clave(hash_t *hash, bool (*f)(const char *clave, void *valor, void *aux), void *aux)
 {
+	if(!hash || !f){
+		return 0;
+	}
+	int i = 0;
+	size_t cantidad = 0;
+	bool funcion = true;
+	while(i < hash->capacidad && funcion == false){
+		nodo_t *actual = hash->tabla[i];
+		while(actual != NULL){
+			cantidad++;
+			if(!f(actual->clave, actual->elemento, aux)){
+				funcion = false;
+			}
+			actual = actual->siguiente;
+		}
+		i++;
+	}
 	
-	return 0;
+	return cantidad+1;
 }
