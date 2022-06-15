@@ -1,6 +1,7 @@
 #include "hash.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #define FACTOR_CARGA_MAX 70
 #define DIVISOR_CLAVES 123456789
@@ -102,32 +103,44 @@ hash_t *rehash(hash_t *hash_original){
 	return hash_original;
 }
 
-nodo_t *insertar_nodo(nodo_t *inicio, int *ocupados, nodo_t *nodo, void ***anterior)
+nodo_t *insertar_nodo(nodo_t *inicio, int *ocupados, void ***anterior, const char *clave, void *elemento)
 {
 	if(!inicio){
+		nodo_t *nodo = nodo_crear(clave, elemento);
+
+		if(!nodo){
+			return NULL;
+		}
+		if (anterior != NULL && (*anterior) != NULL){
+			**anterior = NULL;
+		}
 		(*ocupados)++;
 		return nodo;
 	}
 
 	nodo_t *actual = inicio;
 
-	while(actual->siguiente != NULL && actual->clave != nodo->clave){
+	while(actual->siguiente != NULL && strcmp(actual->clave, clave) != 0){
 		actual = actual->siguiente;
 	}
 
-	if(!actual->siguiente){
+	if(strcmp(actual->clave, clave) == 0){
+		if(anterior && *anterior){
+			**anterior = actual->elemento;
+			actual->elemento = elemento;
+		}
+	}
+	else if(!actual->siguiente){
+		nodo_t *nodo = nodo_crear(clave, elemento);
+
+		if(!nodo){
+			return NULL;
+		}
 		actual->siguiente = nodo;
 		nodo->siguiente = NULL;
 		(*ocupados)++;
 	}
 	
-	if(strcmp(actual->clave, nodo->clave) == 0){
-		if(anterior && *anterior){
-			**anterior = actual->elemento;
-			actual->elemento = nodo->elemento;
-		}
-	}
-
 	return inicio;
 }
 
@@ -144,16 +157,10 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 
 	int posicion = (int)funcion_hash(hash, clave) % hash->capacidad;
 
-	nodo_t *nuevo_nodo = nodo_crear(clave, elemento);
-
-	if(!nuevo_nodo){
-		return NULL;
-	}
-
-	nodo_t *lista_inicio = insertar_nodo(hash->tabla[posicion], &hash->ocupados, nuevo_nodo, &anterior);
+	nodo_t *lista_inicio = insertar_nodo(hash->tabla[posicion], &hash->ocupados, &anterior, clave, elemento);
 
 	hash->tabla[posicion] = lista_inicio;
-
+	printf("ocupados: %i\n", hash->ocupados);
 	return hash;
 }
 
@@ -192,7 +199,7 @@ void *hash_quitar(hash_t *hash, const char *clave)
 	if(hash_contiene(hash, clave) == false){
 		return NULL;
 	}
-	
+
 	int posicion = (int)funcion_hash(hash, clave) % hash->capacidad;
 	void *elemento = NULL;
 

@@ -80,19 +80,19 @@ void pruebas_rehash()
 
 	void *anterior = NULL;
 
-	char *mariano = (char *)malloc(8*sizeof(char));
+	/* char *mariano = (char *)malloc(8*sizeof(char));
 	char *lucas = (char *)malloc(6*sizeof(char));
 	char *manu = (char *)malloc(5*sizeof(char));
 	char *alen = (char *)malloc(5*sizeof(char));
 	char *fabi = (char *)malloc(5*sizeof(char));
-	char *fran = (char *)malloc(5*sizeof(char));
+	char *fran = (char *)malloc(5*sizeof(char)); */
 
-	mariano = "Mariano";
-	lucas = "Lucas";
-	manu = "Manu";
-	alen = "Alen";
-	fabi = "Fabi";
-	fran = "Fran";
+	char *mariano = "Mariano";
+	char *lucas = "Lucas";
+	char *manu = "Manu";
+	char *alen = "Alen";
+	char *fabi = "Fabi";
+	char *fran = "Fran";
 
 	pa2m_afirmar( !!hash_insertar(hash, "AC123BD", mariano, &anterior), "Se insertó 'AC123BD'." );
 	pa2m_afirmar( hash_cantidad(hash) == 1, "El hash tiene un elemento.");
@@ -283,26 +283,26 @@ void pruebas_de_iterador_interno_replica_chanu()
 
 int main()
 {
-	pa2m_nuevo_grupo("Pruebas insercion simple.");
-	pruebas_insercion_simple();
+	/* pa2m_nuevo_grupo("Pruebas insercion simple.");
+	pruebas_insercion_simple(); */
 	
-	pa2m_nuevo_grupo("Pruebas inserciones repetidas.");
-	pruebas_insercion_con_claves_repetidas();
+	/* pa2m_nuevo_grupo("Pruebas inserciones repetidas.");
+	pruebas_insercion_con_claves_repetidas(); */
 
-	pa2m_nuevo_grupo("Pruebas donde se rehashea.");
-	pruebas_rehash();
+	/* pa2m_nuevo_grupo("Pruebas donde se rehashea.");
+	pruebas_rehash(); */
 
-	pa2m_nuevo_grupo("Pruebas de inserción");
-	pruebas_de_insercion_replica_chanu();
+	/* pa2m_nuevo_grupo("Pruebas de inserción");
+	pruebas_de_insercion_replica_chanu(); */
 
-	pa2m_nuevo_grupo("Pruebas de eliminación");
-	pruebas_de_eliminacion_replica_chanu();
+	/* pa2m_nuevo_grupo("Pruebas de eliminación");
+	pruebas_de_eliminacion_replica_chanu(); */
 
-	pa2m_nuevo_grupo("Pruebas de actualización de claves.");
+	/* pa2m_nuevo_grupo("Pruebas de actualización de claves.");
 	pruebas_de_actualizacion_de_claves_replica_chanu();
 
 	pa2m_nuevo_grupo("Pruebas de iterador interno");
-	// pruebas_de_iterador_interno_replica_chanu();
+	// pruebas_de_iterador_interno_replica_chanu(); */
 
 	return pa2m_mostrar_reporte();
 }
