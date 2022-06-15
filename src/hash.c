@@ -26,7 +26,7 @@ hash_t *hash_crear(size_t capacidad)
 
 	nodo_t **tabla = calloc(capacidad, sizeof(nodo_t *));
 	if(!tabla){
-		free(hash);
+		hash_destruir(hash);
 		return NULL;
 	}
 	hash->tabla = tabla;
@@ -34,12 +34,19 @@ hash_t *hash_crear(size_t capacidad)
 	return hash;
 }
 
-int funcion_hash(const char *clave){
+static unsigned long funcion_hash(const char* clave) {
 
-	return (int)clave[0];
+	unsigned long hash = 0;
+	int c;
+
+	while ((c = *clave++)) {
+		hash = (unsigned int)c + (hash << 6) + (hash << 16) - hash;
+	}
+
+	return hash;
 }
 
-/* char *duplicar_clave(const char *string)
+char *duplicar_clave(const char *string)
 {
 	if (!string)
 		return NULL;
@@ -49,8 +56,9 @@ int funcion_hash(const char *clave){
 		return NULL;
 
 	strcpy(duplicado, string);
+
 	return duplicado;
-} */
+}
 
 nodo_t *nodo_crear(const char *clave, void *elemento){
 
@@ -62,7 +70,10 @@ nodo_t *nodo_crear(const char *clave, void *elemento){
 	if(!nodo){
 		return NULL;
 	}
-	nodo->clave = clave;
+
+	char* duplicado = duplicar_clave(clave);
+
+	nodo->clave = duplicado;
 	nodo->elemento = elemento;
 	nodo->siguiente = NULL;
 
@@ -86,7 +97,7 @@ hash_t *rehash(hash_t *hash_original){
 	auxiliar = *hash_original;
 	*hash_original = *nuevo_hash;
 	*nuevo_hash = auxiliar;
-	hash_destruir(nuevo_hash);
+	hash_destruir_todo(nuevo_hash, NULL);
 
 	return hash_original;
 }
@@ -107,8 +118,10 @@ nodo_t *insertar_nodo(nodo_t *inicio, bool *repetida, nodo_t *nodo, void ***ante
 		actual->siguiente = nodo;
 		nodo->siguiente = NULL;
 	}
-	if(actual->clave == nodo->clave){
+	
+	if(strcmp(actual->clave, nodo->clave) == 0){
 		*repetida = true;
+		free((char*)nodo->clave);
 		if(anterior && *anterior){
 			**anterior = actual->elemento;
 			actual->elemento = nodo->elemento;
@@ -120,17 +133,17 @@ nodo_t *insertar_nodo(nodo_t *inicio, bool *repetida, nodo_t *nodo, void ***ante
 
 hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **anterior)
 {
-	if(!hash || !clave || !elemento){
+	if(!hash || !clave){
 		return NULL;
 	}
 
-	/* int factor_carga = hash->ocupados / hash->capacidad;
+	/* float factor_carga = (float)hash->ocupados+1 / (float)hash->capacidad;
 
 	if(factor_carga >= FACTOR){
 		rehash(hash);
 	} */
 
-	int posicion = funcion_hash(clave) % hash->capacidad;
+	int posicion = (int)funcion_hash(clave) % hash->capacidad;
 
 	nodo_t *nuevo_nodo = nodo_crear(clave, elemento);
 
@@ -154,7 +167,7 @@ nodo_t *quitar_nodo(nodo_t *inicio, const char *clave, void **elemento){
 	nodo_t *actual = inicio;
 	nodo_t *anterior = NULL;
 
-	while(actual != NULL && actual->clave != clave){
+	while(actual != NULL && strcmp(actual->clave, clave) != 0){
 		anterior = actual;
 		actual = actual->siguiente;
 	}
@@ -170,22 +183,23 @@ nodo_t *quitar_nodo(nodo_t *inicio, const char *clave, void **elemento){
 	else{
 		inicio = actual->siguiente;
 	}
+	free((char*)actual->clave);
 	free(actual);
 	return inicio;
 }
 
 void *hash_quitar(hash_t *hash, const char *clave)
 {
-	if(!hash || !clave){
+	if(!hash || !clave || hash->ocupados == 0){
 		return NULL;
 	}
-	int posicion = funcion_hash(clave) % hash->capacidad;
+	int posicion = (int)funcion_hash(clave) % hash->capacidad;
 	void *elemento = NULL;
 
 	nodo_t *lista_inicio = quitar_nodo(hash->tabla[posicion], clave, &elemento);
 
 	hash->tabla[posicion] = lista_inicio;
-	
+
 	if(elemento != NULL){
 		hash->ocupados--;
 	}
@@ -202,7 +216,7 @@ void *hash_obtener(hash_t *hash, const char *clave)
 	while(i < hash->capacidad){
 		nodo_t *actual = hash->tabla[i];
 		while(actual != NULL){
-			if(actual->clave == clave){
+			if(strcmp(actual->clave, clave) == 0){
 				return actual->elemento;
 			}
 			actual = actual->siguiente;
@@ -221,7 +235,7 @@ bool hash_contiene(hash_t *hash, const char *clave)
 	while(i < hash->capacidad){
 		nodo_t *actual = hash->tabla[i];
 		while(actual != NULL){
-			if(actual->clave == clave){
+			if(strcmp(actual->clave, clave) == 0){
 				return true;
 			}
 			actual = actual->siguiente;
@@ -257,13 +271,13 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 	int i = 0;
 	while(i < hash->capacidad){
 		nodo_t *actual = hash->tabla[i];
-		while(actual != NULL){
+		while(actual!= NULL){
+			nodo_t *aux = actual;
 			if(destructor != NULL){
 				destructor(actual->elemento);
 			}
-			//free((char*) actual->clave);
-			nodo_t *aux = actual;
 			actual = actual->siguiente;
+			free((char*)aux->clave);
 			free(aux);
 		}
 		i++;
