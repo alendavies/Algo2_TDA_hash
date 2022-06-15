@@ -61,11 +61,11 @@ void inserto_un_elemento_y_se_inserta_correctamente(){
 	pa2m_afirmar(hash_contiene(hash, "AA442CD"), "Busco un cuarto elemento por su clave y lo encuentro.");
 	pa2m_afirmar(hash_obtener(hash, "AA442CD") == guido, "El elemento de la clave pasada es el correcto.");
 
-	pa2m_afirmar(hash_insertar(hash, "AC123BD", matias, &anterior) != NULL, "Inserto un elemento con clave repetida correctamente.");
+	pa2m_afirmar(hash_insertar(hash, "AA442CD", matias, &anterior) != NULL, "Inserto un elemento con clave repetida correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 4, "El hash sigue teniendo la misma cantidad de elementos.");
 
-	pa2m_afirmar(hash_contiene(hash, "AC123BD"), "Busco el elemento por su clave y lo encuentro.");
-	pa2m_afirmar(hash_obtener(hash, "AC123BD") == matias, "Se reemplazó el elemento de la clave repetida.");
+	pa2m_afirmar(hash_contiene(hash, "AA442CD"), "Busco el elemento por su clave y lo encuentro.");
+	pa2m_afirmar(hash_obtener(hash, "AA442CD") == matias, "Se reemplazó el elemento de la clave repetida.");
 
 	pa2m_afirmar(hash_insertar(hash, "A421ACB", azul, &anterior) != NULL, "Inserto otro elemento con clave repetida correctamente.");
 	pa2m_afirmar(hash_cantidad(hash) == 4, "El hash sigue teniendo la misma cantidad de elementos.");

@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define FACTOR 0.75
+#define DIVISOR_CLAVES 123456789
 
 typedef struct nodo {
 	void *elemento;
@@ -34,16 +35,13 @@ hash_t *hash_crear(size_t capacidad)
 	return hash;
 }
 
-static unsigned long funcion_hash(const char* clave) {
+size_t funcion_hash(hash_t* hash, const char* clave){
 
-	unsigned long hash = 0;
-	int c;
-
-	while ((c = *clave++)) {
-		hash = (unsigned int)c + (hash << 6) + (hash << 16) - hash;
+	size_t auxiliar = 0;
+	for(int i = 0; i <= strlen(clave);i++){
+	auxiliar += ((size_t)(clave[i])) % DIVISOR_CLAVES;
 	}
-
-	return hash;
+	return auxiliar;
 }
 
 char *duplicar_clave(const char *string)
@@ -121,7 +119,6 @@ nodo_t *insertar_nodo(nodo_t *inicio, bool *repetida, nodo_t *nodo, void ***ante
 	
 	if(strcmp(actual->clave, nodo->clave) == 0){
 		*repetida = true;
-		free((char*)nodo->clave);
 		if(anterior && *anterior){
 			**anterior = actual->elemento;
 			actual->elemento = nodo->elemento;
@@ -143,7 +140,7 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 		rehash(hash);
 	} */
 
-	int posicion = (int)funcion_hash(clave) % hash->capacidad;
+	int posicion = (int)funcion_hash(hash, clave) % hash->capacidad;
 
 	nodo_t *nuevo_nodo = nodo_crear(clave, elemento);
 
@@ -193,7 +190,7 @@ void *hash_quitar(hash_t *hash, const char *clave)
 	if(!hash || !clave || hash->ocupados == 0){
 		return NULL;
 	}
-	int posicion = (int)funcion_hash(clave) % hash->capacidad;
+	int posicion = (int)funcion_hash(hash, clave) % hash->capacidad;
 	void *elemento = NULL;
 
 	nodo_t *lista_inicio = quitar_nodo(hash->tabla[posicion], clave, &elemento);
