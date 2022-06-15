@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FACTOR 0.75
+#define FACTOR_CARGA_MAX 70
 #define DIVISOR_CLAVES 123456789
 
 typedef struct nodo {
@@ -95,6 +95,7 @@ hash_t *rehash(hash_t *hash_original){
 	auxiliar = *hash_original;
 	*hash_original = *nuevo_hash;
 	*nuevo_hash = auxiliar;
+
 	hash_destruir_todo(nuevo_hash, NULL);
 
 	return hash_original;
@@ -134,11 +135,11 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 		return NULL;
 	}
 
-	/* float factor_carga = (float)hash->ocupados+1 / (float)hash->capacidad;
+	int factor_carga = (((hash->ocupados+1)*100) / hash->capacidad);
 
-	if(factor_carga >= FACTOR){
+	if(factor_carga > FACTOR_CARGA_MAX){
 		rehash(hash);
-	} */
+	}
 
 	int posicion = (int)funcion_hash(hash, clave) % hash->capacidad;
 
