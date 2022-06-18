@@ -1,15 +1,15 @@
 #include "src/hash.h"
+// #include "src/hashDOS.h"
 // #include "src/hash.c" // BORRAR DESPUES
 #include "pa2m.h"
 
 #include <stdlib.h>
 #include <string.h>
-
-// entrada_t *en_posicion(hash_t *hash, size_t posicion);
+#include <stdio.h>
 
 void pruebas_insercion_simple()
 {
-	hash_t *hash = hash_crear(10);
+	hash_t *hash = hash_crear(3);
 
 	void *anterior = NULL;
 
@@ -22,14 +22,16 @@ void pruebas_insercion_simple()
 	pa2m_afirmar( hash_cantidad(hash) == 3, "El hash tiene tres elementos.");
 
 	pa2m_afirmar( hash_contiene(hash, "AC123BD"), "El hash contiene 'AC123BD'.");
+	// pa2m_afirmar( strcmp(NULL, "ABC") == 0, "xd");
 	pa2m_afirmar( strcmp(hash_obtener(hash, "AC123BD"), "Mariano") == 0, "El elemento de la clave 'AC123BD' es Mariano.");
 	pa2m_afirmar( hash_contiene(hash, "OPQ976"), "El hash contiene 'OPQ976'.");
 	pa2m_afirmar( strcmp(hash_obtener(hash, "OPQ976"), "Lucas") == 0, "El elemento de la clave 'OPQ976' es Lucas.");
 	pa2m_afirmar( hash_contiene(hash, "A421ACB"), "El hash contiene 'A421ACB'.");
 	pa2m_afirmar( strcmp(hash_obtener(hash, "A421ACB"), "Manu") == 0, "El elemento de la clave 'A421ACB' es Manu.");
 	
-	hash_destruir_todo(hash, NULL);
+	hash_destruir(hash);
 }
+
 
 void pruebas_insercion_con_claves_repetidas()
 {
@@ -74,26 +76,23 @@ void pruebas_insercion_con_claves_repetidas()
 	
 }
 
+/*
 void pruebas_rehash()
 {
 	hash_t *hash = hash_crear(3);
-
 	void *anterior = NULL;
-
-	/* char *mariano = (char *)malloc(8*sizeof(char));
+	char *mariano = (char *)malloc(8*sizeof(char));
 	char *lucas = (char *)malloc(6*sizeof(char));
 	char *manu = (char *)malloc(5*sizeof(char));
 	char *alen = (char *)malloc(5*sizeof(char));
 	char *fabi = (char *)malloc(5*sizeof(char));
-	char *fran = (char *)malloc(5*sizeof(char)); */
-
-	char *mariano = "Mariano";
-	char *lucas = "Lucas";
-	char *manu = "Manu";
-	char *alen = "Alen";
-	char *fabi = "Fabi";
-	char *fran = "Fran";
-
+	char *fran = (char *)malloc(5*sizeof(char));
+	mariano = "Mariano";
+	lucas = "Lucas";
+	manu = "Manu";
+	alen = "Alen";
+	fabi = "Fabi";
+	fran = "Fran";
 	pa2m_afirmar( !!hash_insertar(hash, "AC123BD", mariano, &anterior), "Se insertó 'AC123BD'." );
 	pa2m_afirmar( hash_cantidad(hash) == 1, "El hash tiene un elemento.");
 	pa2m_afirmar( !!hash_insertar(hash, "OPQ976", lucas, &anterior), "Se insertó el 'OPQ976'." );
@@ -106,9 +105,9 @@ void pruebas_rehash()
 	pa2m_afirmar( hash_cantidad(hash) == 5, "El hash tiene cinco elementos.");
 	pa2m_afirmar( !!hash_insertar(hash, "OPQRST", fran, &anterior), "Se insertó el 'OPQRST'." );
 	pa2m_afirmar( hash_cantidad(hash) == 6, "El hash tiene seis elementos.");
-
 	hash_destruir_todo(hash, NULL);
 }
+*/
 
 void pruebas_de_insercion_replica_chanu()
 {
@@ -190,10 +189,78 @@ void pruebas_de_actualizacion_de_claves_replica_chanu()
 
 }
 
-// void pruebas_con_muchas_inserciones_eliminaciones_replica_chanu()
-// {
-// 	// DAFUCK
-// }
+void pruebas_in_el()
+{
+	hash_t *hash = hash_crear(3);
+
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE1", "1", NULL), "Inserto <CLAVE1,1>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE2", "2", NULL), "Inserto <CLAVE2,2>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE3", "3", NULL), "Inserto <CLAVE3,3>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE4", "4", NULL), "Inserto <CLAVE4,4>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE5", "5", NULL), "Inserto <CLAVE5,5>");
+	pa2m_afirmar( hash_quitar(hash, "CLAVE1") != NULL, "Quito Clave 1");
+	pa2m_afirmar( hash_quitar(hash, "CLAVE2") != NULL, "Quito Clave 2");
+	pa2m_afirmar( hash_quitar(hash, "CLAVE3") != NULL, "Quito Clave 3");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE1", "1", NULL), "Inserto <CLAVE1,1>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE2", "2", NULL), "Inserto <CLAVE2,2>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE3", "3", NULL), "Inserto <CLAVE3,3>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE4", "4", NULL), "Inserto <CLAVE4,4>");
+	pa2m_afirmar( !!hash_insertar(hash, "CLAVE5", "5", NULL), "Inserto <CLAVE5,5>");
+	pa2m_afirmar( hash_cantidad(hash) == 5, "5 elementos.");
+
+	hash_destruir(hash);
+}
+
+void pruebas_con_muchas_inserciones_eliminaciones_replica_chanu()
+{
+	hash_t *hash = hash_crear(10);
+
+	size_t c = 50000;
+
+	char **vector_claves = malloc( c * sizeof(char *) );
+	char **vector_elementos = malloc(c * sizeof(char *) );
+
+	for (int i = 0; i < c; i++) {
+		// strcpy(vector_claves[i], (char *)i);
+		vector_claves[i] = malloc(7);
+		sprintf(vector_claves[i], "%d", 100000+i);
+		// printf("%s\n", vector_claves[i]);
+		vector_elementos[i] = malloc(7);
+		sprintf(vector_claves[i], "%d", 200000+i);
+	}
+
+	for (int i = 0; i < c; i++) {
+		hash_insertar(hash, vector_claves[i], vector_elementos[i], NULL);
+	}
+
+	printf("%i", (int)hash_cantidad(hash));
+	pa2m_afirmar( hash_cantidad(hash) == c, "El hash tiene c elementos");
+
+	for (int i = 0; i < c/3; i++) {
+		hash_quitar(hash, vector_claves[i]);
+	}
+
+	printf("%i", (int)hash_cantidad(hash));
+	pa2m_afirmar( hash_cantidad(hash) == (c-c/3), "El hash tiene 2c/3 elementos");
+
+	for (int i = 0; i < c; i++) {
+		hash_insertar(hash, vector_claves[i], vector_elementos[i], NULL);
+	}
+
+	printf("%i", (int)hash_cantidad(hash));
+	pa2m_afirmar( hash_cantidad(hash) == c, "El hash tiene c elementos");
+
+	hash_destruir(hash);
+
+	for (int i = 0; i < c; i++) {
+		// strcpy(vector_claves[i], (char *)i);
+		free(vector_claves[i]);
+		free(vector_elementos[i]);
+	}
+
+	free(vector_claves);
+	free(vector_elementos);
+}
 
 void pruebas_de_iterador_interno_replica_chanu()
 {
@@ -276,10 +343,12 @@ void pruebas_de_iterador_interno_replica_chanu()
 	// pa2m_afirmar( strcmp((const char *)clave1, (const char *)clave2) == 0, "lol");
 	// pa2m_afirmar( clave1 == clave2, "lol");
 
-	pa2m_afirmar( hash_cantidad(hash) == 12, "El hash tiene tamaño 16.");
+	pa2m_afirmar( hash_cantidad(hash) == 40, "El hash tiene tamaño 40.");
+	// printf("%i", (int)hash_cantidad(hash));
 
 	hash_destruir_todo(hash, NULL);
 }
+
 
 int main()
 {
@@ -289,8 +358,8 @@ int main()
 	pa2m_nuevo_grupo("Pruebas inserciones repetidas.");
 	pruebas_insercion_con_claves_repetidas();
 
-	pa2m_nuevo_grupo("Pruebas donde se rehashea.");
-	pruebas_rehash();
+	// // pa2m_nuevo_grupo("Pruebas donde se rehashea.");
+	// // pruebas_rehash();
 
 	pa2m_nuevo_grupo("Pruebas de inserción");
 	pruebas_de_insercion_replica_chanu();
@@ -302,7 +371,13 @@ int main()
 	pruebas_de_actualizacion_de_claves_replica_chanu();
 
 	pa2m_nuevo_grupo("Pruebas de iterador interno");
-	// pruebas_de_iterador_interno_replica_chanu();
+	pruebas_de_iterador_interno_replica_chanu();
+
+	pa2m_nuevo_grupo("Pruebas muchas inserciones y eliminaciones");
+	pruebas_con_muchas_inserciones_eliminaciones_replica_chanu();
+
+	pa2m_nuevo_grupo("jfg");
+	pruebas_in_el();
 
 	return pa2m_mostrar_reporte();
 }

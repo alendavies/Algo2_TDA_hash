@@ -147,7 +147,7 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	float factor_carga = (((float)hash->ocupados+1) / (float)hash->capacidad);
 
 	if(factor_carga >= FACTOR_CARGA_MAX){
-		return rehash(hash);
+		hash = rehash(hash);
 	}
 
 	int posicion = (int)funcion_hash(clave) % hash->capacidad;
@@ -174,6 +174,12 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 		inicio = insertar_nodo(inicio, &hash->ocupados, &anterior, clave, elemento);
 	}
 	hash->tabla[posicion] = inicio;
+
+	size_t cant;
+	if ((cant = hash_cantidad(hash)) % 4999 == 0) printf("%i\n", (int)cant);
+	if ((cant = hash_cantidad(hash)) < 50000 && cant > 49990) printf("%i\n", (int)cant);
+	if ((cant = hash_cantidad(hash)) > 50000) printf("%i\n", (int)cant);
+
 	return hash;
 }
 
@@ -266,11 +272,28 @@ size_t hash_cantidad(hash_t *hash)
 
 void hash_destruir(hash_t *hash)
 {
-	if(!hash || !hash->tabla){
-		return;
+	hash_destruir_todo(hash, NULL);
+}
+
+void destruir_tabla(nodo_t **tabla, int capacidad, void (*destructor)(void *)){
+
+	int i = 0;
+	while(i < capacidad){
+		nodo_t *actual = tabla[i];
+		while(actual!= NULL){
+			nodo_t *aux = actual;
+			actual = actual->siguiente;
+
+			if(destructor){
+				destructor(actual->elemento);
+			}
+
+			free((char*)aux->clave);
+			free(aux);
+		}
+		i++;
 	}
-	free(hash->tabla);
-	free(hash);
+	free(tabla);
 }
 
 void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
@@ -278,22 +301,9 @@ void hash_destruir_todo(hash_t *hash, void (*destructor)(void *))
 	if(!hash){
 		return;
 	}
-	int i = 0;
-	while(i < hash->capacidad){
-		nodo_t *actual = hash->tabla[i];
-		while(actual!= NULL){
-			nodo_t *aux = actual;
-			if(destructor != NULL){
-				destructor(actual->elemento);
-			}
-			actual = actual->siguiente;
-			free((char*)aux->clave);
-			free(aux);
-		}
-		i++;
-	}
-
-	hash_destruir(hash);
+	destruir_tabla(hash->tabla, hash->capacidad, destructor);
+	
+	free(hash);
 }
 
 size_t hash_con_cada_clave(hash_t *hash, bool (*f)(const char *clave, void *valor, void *aux), void *aux)
