@@ -147,7 +147,7 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	float factor_carga = (((float)hash->ocupados+1) / (float)hash->capacidad);
 
 	if(factor_carga >= FACTOR_CARGA_MAX){
-		hash = rehash(hash);
+		return rehash(hash);
 	}
 
 	int posicion = (int)funcion_hash(clave) % hash->capacidad;
