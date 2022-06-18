@@ -154,7 +154,6 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 
 	nodo_t *inicio = hash->tabla[posicion];
 
-
 	if(!inicio){
 		nodo_t *nodo = nodo_crear(clave, elemento);
 		if(!nodo){
@@ -174,11 +173,8 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	else{
 		inicio = insertar_nodo(inicio, &hash->ocupados, &anterior, clave, elemento);
 	}
-	if(inicio){
-		hash->tabla[posicion] = inicio;
-		return hash;
-	}
-	return NULL;
+	hash->tabla[posicion] = inicio;
+	return hash;
 }
 
 nodo_t *quitar_nodo(nodo_t *inicio, const char *clave, void **elemento, int *ocupados){
