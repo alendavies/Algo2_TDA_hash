@@ -173,12 +173,8 @@ hash_t *hash_insertar(hash_t *hash, const char *clave, void *elemento, void **an
 	else{
 		inicio = insertar_nodo(inicio, &hash->ocupados, &anterior, clave, elemento);
 	}
+	
 	hash->tabla[posicion] = inicio;
-
-	size_t cant;
-	if ((cant = hash_cantidad(hash)) % 4999 == 0) printf("%i\n", (int)cant);
-	if ((cant = hash_cantidad(hash)) < 50000 && cant > 49990) printf("%i\n", (int)cant);
-	if ((cant = hash_cantidad(hash)) > 50000) printf("%i\n", (int)cant);
 
 	return hash;
 }
@@ -256,9 +252,21 @@ void *hash_obtener(hash_t *hash, const char *clave)
 
 bool hash_contiene(hash_t *hash, const char *clave)
 {
-	if(hash_obtener(hash, clave) != NULL){
-		return true;
+	if(!hash || !clave){
+		return NULL;
 	}
+
+	int posicion = (int)funcion_hash(clave) % hash->capacidad;
+
+	nodo_t *actual = hash->tabla[posicion];
+
+	while(actual != NULL){
+		if(strcmp(actual->clave, clave) == 0) {
+        		return true;
+		}
+		actual = actual->siguiente;
+	}
+
 	return false;
 }
 
