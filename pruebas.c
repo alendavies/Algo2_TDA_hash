@@ -111,8 +111,37 @@ void quito_un_elemento_y_se_quita_correctamente(){
 	hash_destruir_todo(hash, NULL);
 }
 
+bool mostrar_clave(const char *clave, void *valor, void *aux)
+{
+	if (!clave)
+		return false;
+
+	aux = aux;
+
+	return true;
+}
+
 void itero_y_me_devuelve_la_cantidad_de_claves(){
-	
+
+	hash_t *hash = hash_crear(20);
+	void *anterior = NULL;
+
+	pa2m_afirmar(hash_con_cada_clave(hash, mostrar_clave, NULL) == 0, "No se puede iterar un hash vacio");
+	pa2m_afirmar(hash_con_cada_clave(NULL, mostrar_clave, NULL) == 0, "No se puede iterar un hash nulo");
+
+	pa2m_afirmar(hash_con_cada_clave(hash, NULL, NULL) == 0, "No se puede iterar un hash con funcion nula");
+
+	char *mariano = "Mariano";
+	char *lucas = "Lucas";
+	char *manu = "Manu";
+
+	hash_insertar(hash, "AC123BD", mariano, &anterior);
+	hash_insertar(hash, "OPQ976", lucas, &anterior);
+	hash_insertar(hash, "A421ACB", manu, &anterior);
+
+	pa2m_afirmar(hash_con_cada_clave(hash, mostrar_clave, NULL) == 3, "Puedo iterar en un hash y me devuelve la cantidad de elementos");
+
+	hash_destruir_todo(hash, NULL);
 }
 
 int main()
